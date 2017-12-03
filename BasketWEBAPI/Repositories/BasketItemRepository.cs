@@ -32,9 +32,9 @@ namespace BasketWEBAPI.Repositories
         {
             try
             {
-                int maxId = items.Any() ? items.Max(x => x.Id) : 0;
-
+                int maxId = items.Any() ? items.Max(x => x.Id) : 0;               
                 modelToAdd.Id = maxId + 1;
+
                 items.Add(modelToAdd);
 
                 return true;

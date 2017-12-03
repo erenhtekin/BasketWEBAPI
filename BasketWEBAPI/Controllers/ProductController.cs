@@ -8,10 +8,12 @@ using System.Web.Http;
 
 namespace BasketWEBAPI.Models
 {
+    [RoutePrefix("api/product")]
     public class ProductController : ApiController
     {
         ProductRepository productRepo = DbProvider.GetInstance().ProductRepo;
 
+        [HttpGet]
         public List<Product> Get()
         {
             var items = productRepo.All();

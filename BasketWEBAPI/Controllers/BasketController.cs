@@ -6,31 +6,35 @@ using System.Net.Http;
 using System.Web.Http;
 using BasketWEBAPI.Models;
 using BasketWEBAPI.Repositories;
+using System.Web.Script.Services;
+using System.Web.Services;
 
 namespace BasketWEBAPI.Controllers
 {
-
+    [RoutePrefix("api/basket")]
     public class BasketController : ApiController
     {
         bool flag;
         ProductRepository productRepo = DbProvider.GetInstance().ProductRepo;
         BasketItemRepository basketRepo = DbProvider.GetInstance().BasketItemRepo;
+
         //GET api/<controller>
 
-
-        // GET api/<controller>/5
-        public List<BasketItem> Get(int Customerid)
+        // GET api/<controller>/5 
+        [HttpGet]
+        public List<BasketItem> Get([FromUri] int Customerid)
         {
 
-            var items = DbProvider.GetInstance().BasketItemRepo.GetItemsOfCustomer(Customerid);
-
+           var items = DbProvider.GetInstance().BasketItemRepo.GetItemsOfCustomer(Customerid);
             return items.ToList();
+
+
 
 
         }
 
-        // POST api/<controller>
-        public string Post([FromUri] BasketItem model)
+        [HttpPost]        // POST api/<controller>
+        public string Post([FromBody] BasketItem model)
         {
 
             if (model != null)
@@ -45,12 +49,14 @@ namespace BasketWEBAPI.Controllers
                 else
                 {
                     int count = product.StockQuantity;
-                    int basketproductcount = CurrentBasketItem == null ? 0 : CurrentBasketItem.Count;
+                    int basketproductcount = CurrentBasketItem == null ? 0 : CurrentBasketItem.Count;//current basket count
                     if (count >= (model.Count + basketproductcount))
                     {
 
                         if (CurrentBasketItem == null)
                         {
+                            model.TotalPrice = model.Count * product.ProductPrice;
+                            model.ProductName = product.ProductName;
                             flag = basketRepo.Add(model);
                             if (flag)
                                 return "Succesful";
@@ -106,7 +112,8 @@ namespace BasketWEBAPI.Controllers
                         if (count >= (model.Count + basketproductcount))
                         {
                             CurrentBasketItem.Count += model.Count;//sum same id of products if the basket has already one
-
+                            model.TotalPrice = CurrentBasketItem.Count * product.ProductPrice;
+                            model.ProductName = CurrentBasketItem.ProductName;
                             flag = basketRepo.Update(model);
                             if (flag)
                                 return "Succesful";
