@@ -67,6 +67,7 @@ namespace BasketWEBAPI.Controllers
                         {
                             //Updating current quantity if same product exists in basket and then update
                             CurrentBasketItem.Count += model.Count;
+                            CurrentBasketItem.TotalPrice = CurrentBasketItem.Count * product.ProductPrice;
                             flag = basketRepo.Update(CurrentBasketItem);
                             if (flag)
                                 return "Succesful";
